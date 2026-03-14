@@ -3,14 +3,10 @@ import environ
 from pathlib import Path
 from datetime import timedelta
 
-env = environ.Env()
-environ.Env.read_env()  # Read .env file
-
-
-
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -43,7 +39,7 @@ DJANGO_APPS = [
 ]
 
 # here we put on all apps we will create
-PROJECT_APPS = []
+PROJECT_APPS = ['app.user']
 ECOMMERCE_APPS = []
 
 
@@ -55,21 +51,10 @@ THIRD_PARTY_APPS=[
     'social_django',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'ckeditor',
-    'ckeditor_uploader',
 ]
 
 # this is the sum between all the things that make up our applications
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + ECOMMERCE_APPS + THIRD_PARTY_APPS
-
-CKEDITOR_CONFIGS = {
-    'default':{
-        'toolbar' : 'full',
-        'autoParagraph': False
-    }
-}
-
-CKEDITOR_UPLOAD_PATH = "/media/"
 
 MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
@@ -155,11 +140,15 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+AUTH_USER_MODEL="user.User"
+
 if not DEBUG:
     MIDDLEWARE.insert(3, 'whitenoise.middleware.WhiteNoiseMiddleware')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'user.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -211,3 +200,5 @@ CORS_ALLOWED_ORIGINS = [
     ).split(',')
     if o.strip()
 ]
+
+CHROMA_DIR = str(BASE_DIR / 'chroma')
