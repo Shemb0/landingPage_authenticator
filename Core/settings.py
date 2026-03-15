@@ -40,7 +40,7 @@ DJANGO_APPS = [
 
 # here we put on all apps we will create
 PROJECT_APPS = ['app.user']
-ECOMMERCE_APPS = []
+ECOMMERCE_APPS = ["app.agent","app.citas"]
 
 
 # in this section we put on everythings that we installed in requirements.txt
@@ -78,7 +78,7 @@ ROOT_URLCONF = 'Core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

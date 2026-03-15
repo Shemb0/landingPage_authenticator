@@ -1,3 +1,7 @@
+# Sensitive credentials - NEVER commit these
+token.json
+credential-landingpage.json
+
 # Python-generated files
 __pycache__/
 *.py[oc]

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agente Legal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+    }
+
+    /* Botón flotante */
+    #chat-toggle {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+      font-size: 24px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+
+    /* Ventana del chat */
+    #chat-window {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      right: 24px;
+      width: 360px;
+      height: 500px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      flex-direction: column;
+      z-index: 999;
+      overflow: hidden;
+    }
+
+    #chat-window.open {
+      display: flex;
+    }
+
+    /* Header */
+    #chat-header {
+      background: #2563eb;
+      color: white;
+      padding: 16px;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    /* Mensajes */
+    #chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    .message.user {
+      background: #2563eb;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.bot {
+      background: #f1f5f9;
+      color: #1e293b;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message.loading {
+      background: #f1f5f9;
+      color: #94a3b8;
+      align-self: flex-start;
+    }
+
+    /* Input */
+    #chat-input-area {
+      display: flex;
+      padding: 12px;
+      border-top: 1px solid #e2e8f0;
+      gap: 8px;
+    }
+
+    #chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    #chat-input:focus {
+      border-color: #2563eb;
+    }
+
+    #chat-send {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    #chat-send:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    #upload-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #64748b;
+      padding: 0 4px;
+    }
+
+    #upload-btn:hover { color: #2563eb; }
+
+    #upload-status {
+      font-size: 12px;
+      color: #64748b;
+      text-align: center;
+      padding: 4px 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Botón flotante -->
+  <button id="chat-toggle" title="Abrir chat">💬</button>
+
+  <!-- Ventana del chat -->
+  <div id="chat-window">
+    <div id="chat-header">Asistente Legal</div>
+    <div id="chat-messages">
+      <div class="message bot">Hola, soy tu asistente legal. ¿En qué puedo ayudarte?</div>
+    </div>
+    <div id="upload-status"></div>
+    <div id="chat-input-area">
+      <input id="file-input" type="file" accept=".pdf" style="display:none" />
+      <button id="upload-btn" title="Subir PDF">📎</button>
+      <input id="chat-input" type="text" placeholder="Escribe tu consulta..." />
+      <button id="chat-send">➤</button>
+    </div>
+  </div>
+
+  <script>
+    const toggle = document.getElementById("chat-toggle");
+    const window_ = document.getElementById("chat-window");
+    const messages = document.getElementById("chat-messages");
+    const input = document.getElementById("chat-input");
+    const sendBtn = document.getElementById("chat-send");
+    const uploadBtn = document.getElementById("upload-btn");
+    const fileInput = document.getElementById("file-input");
+    const uploadStatus = document.getElementById("upload-status");
+
+    uploadBtn.addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      uploadStatus.textContent = "Subiendo PDF...";
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch("/agent/upload/", {
+          method: "POST",
+          headers: { "X-CSRFToken": getCookie("csrftoken") },
+          body: formData,
+        });
+        const data = await res.json();
+        uploadStatus.textContent = res.ok
+          ? `✓ PDF indexado (${data.chunks_indexed} chunks)`
+          : `✗ ${data.error}`;
+      } catch {
+        uploadStatus.textContent = "✗ Error al subir el PDF.";
+      } finally {
+        fileInput.value = "";
+        setTimeout(() => (uploadStatus.textContent = ""), 4000);
+      }
+    });
+
+    // Abrir/cerrar chat
+    toggle.addEventListener("click", () => {
+      window_.classList.toggle("open");
+      if (window_.classList.contains("open")) input.focus();
+    });
+
+    // Enviar con Enter
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) sendMessage();
+    });
+
+    sendBtn.addEventListener("click", sendMessage);
+
+    function addMessage(text, type) {
+      const div = document.createElement("div");
+      div.className = `message ${type}`;
+      div.textContent = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+      return div;
+    }
+
+    async function sendMessage() {
+      const query = input.value.trim();
+      if (!query) return;
+
+      input.value = "";
+      sendBtn.disabled = true;
+
+      addMessage(query, "user");
+      const loading = addMessage("Escribiendo...", "loading");
+
+      try {
+        const res = await fetch("/agent/chat/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-CSRFToken": getCookie("csrftoken") },
+          body: JSON.stringify({ query }),
+        });
+
+        const data = await res.json();
+        loading.remove();
+        addMessage(data.response || data.error, res.ok ? "bot" : "loading");
+      } catch {
+        loading.remove();
+        addMessage("Error al conectar con el servidor.", "loading");
+      } finally {
+        sendBtn.disabled = false;
+        input.focus();
+      }
+    }
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+      return "";
+    }
+  </script>
+
+</body>
+</html>
