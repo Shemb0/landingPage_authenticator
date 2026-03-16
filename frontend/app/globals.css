@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+:root {
+  --font-playfair: "Playfair Display", serif;
+  --font-inter: "Inter", sans-serif;
+  --gold: #C9A84C;
+  --gold-light: #E2C87A;
+  --gold-dark: #A07C30;
+}
+
+body {
+  background: #0a0a0a;
+  color: #e5e5e5;
+  font-family: var(--font-inter);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-playfair);
+}
+
+.gold-divider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+  margin: 0 auto;
+}
+
+.gold-divider-left {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+}
+
+/* Hover effects con gold */
+.card-hover:hover {
+  border-color: rgba(201, 168, 76, 0.6) !important;
+  background-color: #141414 !important;
+}
+
+.service-card:hover {
+  background-color: #141414 !important;
+}
+
+.nav-link:hover {
+  color: #C9A84C !important;
+}
+
+.btn-gold:hover {
+  background-color: #E2C87A !important;
+}
+
+.btn-gold-outline:hover {
+  background-color: #C9A84C !important;
+  color: #0a0a0a !important;
+}
+
+.btn-hero-secondary:hover {
+  border-color: #C9A84C !important;
+  color: #C9A84C !important;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: #C9A84C !important;
+  outline: none;
+}
