@@ -142,7 +142,10 @@ MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL="user.User"
 
-if not DEBUG:
+if DEBUG:
+    # En desarrollo: imprime los emails en la terminal en vez de mandarlos
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
     MIDDLEWARE.insert(3, 'whitenoise.middleware.WhiteNoiseMiddleware')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -185,9 +188,9 @@ DJOSER = {
     'SOCIAL_AUTH_TOKEN_STRATEGY': 'djoser.social.token.jwt.TokenStrategy',
     'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:8000/google', 'http://localhost:8000/facebook'],
     'SERIALIZERS': {
-        'user_create': 'apps.user.serializers.UserCreateSerializer',
-        'user': 'apps.user.serializers.UserCreateSerializer',
-        'current_user': 'apps.user.serializers.UserCreateSerializer',
+        'user_create': 'app.user.serializers.UserCreateSerializer',
+        'user': 'app.user.serializers.UserCreateSerializer',
+        'current_user': 'app.user.serializers.UserCreateSerializer',
         'user_delete': 'djoser.serializers.UserDeleteSerializer',
     },
 }
