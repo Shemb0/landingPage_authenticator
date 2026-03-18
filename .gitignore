@@ -1,3 +1,5 @@
+templates/
+
 # Sensitive credentials - NEVER commit these
 token.json
 credential-landingpage.json

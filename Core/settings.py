@@ -125,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Madrid'
 
 USE_I18N = True
 
@@ -142,9 +142,18 @@ MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL="user.User"
 
+# ── EMAIL ─────────────────────────────────────────────────────────
+EMAIL_BACKEND   = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST      = 'smtp.gmail.com'
+EMAIL_PORT      = 587
+EMAIL_USE_TLS   = True
+EMAIL_HOST_USER     = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL  = os.environ.get('EMAIL_HOST_USER', '')
+ADMIN_EMAIL         = os.environ.get('ADMIN_EMAIL', '')
+
 if DEBUG:
-    # En desarrollo: imprime los emails en la terminal en vez de mandarlos
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    MIDDLEWARE.insert(0, 'django.middleware.common.CommonMiddleware')
 else:
     MIDDLEWARE.insert(3, 'whitenoise.middleware.WhiteNoiseMiddleware')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

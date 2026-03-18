@@ -10,6 +10,7 @@ export default function LoginPage() {
   // ── todos los hooks van ADENTRO del componente ──────────────────
   const login   = useAuthStore((state) => state.login)
   const isAuthenticated = useAuthStore((state)=> state.isAuthenticated)
+  const error = useAuthStore((state)=> state.error)
   const router  = useRouter()
 
  
@@ -110,6 +111,10 @@ export default function LoginPage() {
                 ¿Olvidaste tu contraseña?
               </span>
             </div>
+            {error && (
+      <p className="text-red-400 text-sm">{error.detail}</p>
+    )}
+
 
             {/* Botón */}
             <button

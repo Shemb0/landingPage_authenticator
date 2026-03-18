@@ -89,17 +89,20 @@ def book_appointment(date: str, hour: str, client_name: str, client_surname: str
     from app.citas.models import Citas
     from datetime import datetime
 
+    result = create_event(date, hour, client_name, client_surname, reason)
+
     dt = datetime.strptime(f"{date} {hour}", "%Y-%m-%d %H:%M")
     Citas.objects.create(
         name=reason,
         date=dt,
         client_name=client_name,
         client_surname=client_surname,
-        phone_number=int(phone),
+        phone_number=phone,
+        google_event_id=result.get("id", ""),
     )
 
-    link = create_event(date, hour, client_name, client_surname, reason)
-    return f"Cita registrada correctamente. {f'Enlace: {link}' if link else ''}"
+    link = result.get("link", "")
+    return f"Cita registrada correctamente. {('Enlace: ' + link) if link else ''}"
 
 
 def chat_with_rag(query: str, memory: ChatMessageHistory) -> str:

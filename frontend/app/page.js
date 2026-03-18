@@ -2,6 +2,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import ChatWidget from "@/components/ChatWidget";
+import FormCita from "@/components/FormCita";
+import FormContacto from "@/components/FormContacto";
 import {
   IconScales, IconBuilding, IconFamily, IconHouse,
   IconBriefcase, IconShield, IconGavel, IconCalendar, IconMail
@@ -37,58 +39,81 @@ export default function Home() {
       <Navbar />
 
       {/* HERO */}
-      <section className="relative min-h-screen flex items-center overflow-hidden" style={{ backgroundColor: "#0d1117" }}>
-        <div className="absolute inset-0">
-          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.05) 0%, transparent 50%)" }} />
-          <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "linear-gradient(rgba(201,168,76,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.3) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
-        </div>
-
+      <section className="relative min-h-screen flex items-center overflow-hidden" style={{ backgroundColor: "#0a0a0a" }}>
         <div className="absolute left-16 top-0 bottom-0 w-px hidden lg:block" style={{ background: "linear-gradient(to bottom, transparent, #C9A84C40, transparent)" }} />
 
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-5 text-[400px] pointer-events-none select-none hidden xl:block" style={{ color: "#C9A84C", fontFamily: "serif" }}>
-          ⚖
-        </div>
-
         <div className="relative max-w-7xl mx-auto px-6 lg:px-16 pt-32 pb-24 w-full">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="h-px w-12" style={{ backgroundColor: "#C9A84C" }} />
-              <span className="text-xs uppercase tracking-[0.3em] font-medium" style={{ color: "#C9A84C" }}>
-                Estudio Jurídico Profesional
-              </span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Columna izquierda: texto */}
+            <div>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="h-px w-12" style={{ backgroundColor: "#C9A84C" }} />
+                <span className="text-xs uppercase tracking-[0.3em] font-medium" style={{ color: "#C9A84C" }}>
+                  Estudio Jurídico Profesional
+                </span>
+              </div>
+
+              <h1 className="text-6xl lg:text-7xl font-bold leading-tight mb-2 text-white">
+                Bienvenido al
+              </h1>
+              <h1 className="text-6xl lg:text-7xl font-bold leading-tight mb-8" style={{ color: "#C9A84C" }}>
+                Estudio Jurídico
+              </h1>
+
+              <div className="flex items-center gap-3 mb-8">
+                <div className="h-px flex-1 max-w-xs" style={{ background: "linear-gradient(90deg, #C9A84C, transparent)" }} />
+                <div className="w-2 h-2 rotate-45" style={{ backgroundColor: "#C9A84C" }} />
+              </div>
+
+              <p className="text-gray-400 text-lg leading-relaxed mb-12 max-w-xl">
+                Asesoramiento jurídico profesional, honesto y efectivo. Más de 15 años protegiendo los derechos e intereses de nuestros clientes con resultados comprobables.
+              </p>
+
+              <div className="flex flex-wrap gap-4">
+                <Link
+                  href="/#contacto"
+                  className="btn-gold px-10 py-4 font-semibold text-sm uppercase tracking-widest transition-all"
+                  style={{ backgroundColor: "#C9A84C", color: "#0a0a0a" }}
+                >
+                  Reservar Consulta
+                </Link>
+                <Link
+                  href="/#casos"
+                  className="btn-hero-secondary px-10 py-4 font-semibold text-sm uppercase tracking-widest border transition-all text-white"
+                  style={{ borderColor: "#C9A84C40" }}
+                >
+                  Ver Casos
+                </Link>
+              </div>
             </div>
 
-            <h1 className="text-6xl lg:text-7xl font-bold leading-tight mb-2 text-white">
-              Bienvenido al
-            </h1>
-            <h1 className="text-6xl lg:text-7xl font-bold leading-tight mb-8" style={{ color: "#C9A84C" }}>
-              Estudio Jurídico
-            </h1>
+            {/* Columna derecha: imagen */}
+            <div className="relative hidden lg:flex items-center justify-center">
+              {/* Marco decorativo dorado */}
+              <div className="absolute -top-4 -left-4 w-full h-full border pointer-events-none" style={{ borderColor: "#C9A84C30" }} />
+              <div className="absolute -bottom-4 -right-4 w-full h-full border pointer-events-none" style={{ borderColor: "#C9A84C15" }} />
 
-            <div className="flex items-center gap-3 mb-8">
-              <div className="h-px flex-1 max-w-xs" style={{ background: "linear-gradient(90deg, #C9A84C, transparent)" }} />
-              <div className="w-2 h-2 rotate-45" style={{ backgroundColor: "#C9A84C" }} />
-            </div>
-
-            <p className="text-gray-400 text-lg leading-relaxed mb-12 max-w-xl">
-              Asesoramiento jurídico profesional, honesto y efectivo. Más de 15 años protegiendo los derechos e intereses de nuestros clientes con resultados comprobables.
-            </p>
-
-            <div className="flex flex-wrap gap-4">
-              <Link
-                href="/#contacto"
-                className="btn-gold px-10 py-4 font-semibold text-sm uppercase tracking-widest transition-all"
-                style={{ backgroundColor: "#C9A84C", color: "#0a0a0a" }}
-              >
-                Reservar Consulta
-              </Link>
-              <Link
-                href="/#casos"
-                className="btn-hero-secondary px-10 py-4 font-semibold text-sm uppercase tracking-widest border transition-all text-white"
-                style={{ borderColor: "#C9A84C40" }}
-              >
-                Ver Casos
-              </Link>
+              {/* Imagen */}
+              <div className="relative w-full overflow-hidden" style={{ aspectRatio: "4/5" }}>
+                <img
+                  src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80"
+                  alt="Estudio Jurídico Profesional"
+                  className="w-full h-full object-cover"
+                  style={{ filter: "grayscale(20%) contrast(1.05)" }}
+                />
+                {/* Overlay oscuro para integrar con la paleta */}
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 50%, rgba(10,10,10,0.7) 100%), linear-gradient(to right, rgba(10,10,10,0.3) 0%, transparent 40%)" }} />
+                {/* Badge dorado sobre la imagen */}
+                <div className="absolute bottom-8 left-8 right-8">
+                  <div className="flex items-center gap-3 px-5 py-3" style={{ backgroundColor: "rgba(10,10,10,0.85)", border: "1px solid #C9A84C40" }}>
+                    <div className="w-1 h-8 flex-shrink-0" style={{ backgroundColor: "#C9A84C" }} />
+                    <div>
+                      <div className="text-xs uppercase tracking-[0.2em] font-semibold" style={{ color: "#C9A84C" }}>15+ años</div>
+                      <div className="text-white text-sm font-medium">de experiencia jurídica</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -176,8 +201,14 @@ export default function Home() {
       </section>
 
       {/* TESTIMONIOS */}
-      <section className="py-28" style={{ backgroundColor: "#0f0f0f" }}>
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="relative py-28 overflow-hidden" style={{ backgroundColor: "#0d1117" }}>
+        {/* Fondo con gradientes y grilla (traído del hero) */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.05) 0%, transparent 50%)" }} />
+          <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "linear-gradient(rgba(201,168,76,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.3) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
+          <div className="absolute right-0 bottom-0 opacity-5 text-[300px] leading-none pointer-events-none select-none hidden xl:block" style={{ color: "#C9A84C", fontFamily: "serif" }}>⚖</div>
+        </div>
+        <div className="relative max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <span className="text-xs uppercase tracking-[0.3em] font-medium" style={{ color: "#C9A84C" }}>Lo que dicen nuestros clientes</span>
             <h2 className="text-4xl font-bold text-white mt-4 mb-5">Testimonios</h2>
@@ -250,41 +281,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <form className="space-y-5">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#C9A84C80" }}>Nombre</label>
-                    <input type="text" placeholder="Tu nombre" className="w-full border px-4 py-3 text-sm text-gray-200 placeholder-gray-700 bg-transparent transition-colors" style={{ borderColor: "#C9A84C30" }} />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#C9A84C80" }}>Apellido</label>
-                    <input type="text" placeholder="Tu apellido" className="w-full border px-4 py-3 text-sm text-gray-200 placeholder-gray-700 bg-transparent transition-colors" style={{ borderColor: "#C9A84C30" }} />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#C9A84C80" }}>Teléfono</label>
-                  <input type="tel" placeholder="+54 11 1234-5678" className="w-full border px-4 py-3 text-sm text-gray-200 placeholder-gray-700 bg-transparent" style={{ borderColor: "#C9A84C30" }} />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#C9A84C80" }}>Tipo de consulta</label>
-                  <select className="w-full border px-4 py-3 text-sm text-gray-400 bg-transparent" style={{ borderColor: "#C9A84C30", backgroundColor: "#0a0a0a" }}>
-                    <option value="">Seleccioná un área</option>
-                    <option>Derecho Civil</option>
-                    <option>Derecho Comercial</option>
-                    <option>Derecho de Familia</option>
-                    <option>Derecho Inmobiliario</option>
-                    <option>Derecho Laboral</option>
-                    <option>Derecho Penal</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#C9A84C80" }}>Fecha y hora</label>
-                  <input type="datetime-local" className="w-full border px-4 py-3 text-sm text-gray-400" style={{ borderColor: "#C9A84C30", backgroundColor: "#0a0a0a" }} />
-                </div>
-                <button type="submit" className="btn-gold w-full py-4 font-semibold text-sm uppercase tracking-widest transition-all mt-2" style={{ backgroundColor: "#C9A84C", color: "#0a0a0a" }}>
-                  Confirmar Cita
-                </button>
-              </form>
+              <FormCita />
             </div>
 
             {/* CONTACTO */}
@@ -297,31 +294,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <form className="space-y-5">
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#C9A84C80" }}>Nombre completo</label>
-                  <input type="text" placeholder="Tu nombre completo" className="w-full border px-4 py-3 text-sm text-gray-200 placeholder-gray-700 bg-transparent" style={{ borderColor: "#C9A84C30" }} />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#C9A84C80" }}>Email</label>
-                  <input type="email" placeholder="tu@email.com" className="w-full border px-4 py-3 text-sm text-gray-200 placeholder-gray-700 bg-transparent" style={{ borderColor: "#C9A84C30" }} />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#C9A84C80" }}>Teléfono (opcional)</label>
-                  <input type="tel" placeholder="+54 11 1234-5678" className="w-full border px-4 py-3 text-sm text-gray-200 placeholder-gray-700 bg-transparent" style={{ borderColor: "#C9A84C30" }} />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#C9A84C80" }}>Asunto</label>
-                  <input type="text" placeholder="¿Sobre qué querés consultarnos?" className="w-full border px-4 py-3 text-sm text-gray-200 placeholder-gray-700 bg-transparent" style={{ borderColor: "#C9A84C30" }} />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#C9A84C80" }}>Mensaje</label>
-                  <textarea rows={4} placeholder="Contanos brevemente tu situación..." className="w-full border px-4 py-3 text-sm text-gray-200 placeholder-gray-700 bg-transparent resize-none" style={{ borderColor: "#C9A84C30" }} />
-                </div>
-                <button type="submit" className="btn-gold-outline w-full py-4 font-semibold text-sm uppercase tracking-widest border transition-all mt-2 text-white" style={{ borderColor: "#C9A84C" }}>
-                  Enviar Mensaje
-                </button>
-              </form>
+              <FormContacto />
             </div>
           </div>
         </div>

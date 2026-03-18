@@ -40,10 +40,12 @@ def get_available_slots(date_str: str) -> list[str]:
     if date.weekday() >= 5:
         return []
 
+    # Slots en hora Madrid (naive)
     all_slots = [datetime(date.year, date.month, date.day, h) for h in range(9, 18)]
 
-    start = date.replace(hour=0, minute=0, second=0, tzinfo=timezone.utc).isoformat()
-    end = date.replace(hour=23, minute=59, second=59, tzinfo=timezone.utc).isoformat()
+    # Rango de consulta en hora Madrid para cubrir el día completo
+    start = TIMEZONE.localize(date.replace(hour=0, minute=0, second=0)).isoformat()
+    end   = TIMEZONE.localize(date.replace(hour=23, minute=59, second=59)).isoformat()
 
     result = service.freebusy().query(body={
         "timeMin": start,
@@ -57,8 +59,9 @@ def get_available_slots(date_str: str) -> list[str]:
     for slot in all_slots:
         slot_end = slot + timedelta(hours=1)
         occupied = any(
-            slot < datetime.fromisoformat(b["end"]).replace(tzinfo=None)
-            and slot_end > datetime.fromisoformat(b["start"]).replace(tzinfo=None)
+            # Convertir busy a hora Madrid (naive) para comparar en la misma base
+            slot < datetime.fromisoformat(b["end"]).astimezone(TIMEZONE).replace(tzinfo=None)
+            and slot_end > datetime.fromisoformat(b["start"]).astimezone(TIMEZONE).replace(tzinfo=None)
             for b in busy
         )
         if not occupied:
@@ -67,8 +70,8 @@ def get_available_slots(date_str: str) -> list[str]:
     return available
 
 
-def create_event(date_str: str, hour: str, client_name: str, client_surname: str, reason: str) -> str:
-    """Creates a Google Calendar event. Returns the event link."""
+def create_event(date_str: str, hour: str, client_name: str, client_surname: str, reason: str) -> dict:
+    """Creates a Google Calendar event. Returns dict with id and htmlLink."""
     service = get_calendar_service()
 
     start = TIMEZONE.localize(datetime.strptime(f"{date_str} {hour}", "%Y-%m-%d %H:%M"))
@@ -79,7 +82,40 @@ def create_event(date_str: str, hour: str, client_name: str, client_surname: str
         "description": reason,
         "start": {"dateTime": start.isoformat()},
         "end": {"dateTime": end.isoformat()},
+        "extendedProperties": {
+            "private": {"source": "estudio_juridico"}
+        },
     }
 
     created = service.events().insert(calendarId="primary", body=event).execute()
-    return created.get("htmlLink", "")
+    return {"id": created.get("id", ""), "link": created.get("htmlLink", "")}
+
+
+def delete_event(event_id: str) -> bool:
+    """Deletes a Google Calendar event by ID. Returns True if successful."""
+    try:
+        service = get_calendar_service()
+        service.events().delete(calendarId="primary", eventId=event_id).execute()
+        return True
+    except Exception:
+        return False
+
+
+def update_event(event_id: str, date_str: str, hour: str, client_name: str, client_surname: str, reason: str) -> bool:
+    """Updates an existing Google Calendar event."""
+    try:
+        service = get_calendar_service()
+        start = TIMEZONE.localize(datetime.strptime(f"{date_str} {hour}", "%Y-%m-%d %H:%M"))
+        end = start + timedelta(hours=1)
+
+        event = {
+            "summary": f"Cita: {client_name} {client_surname}",
+            "description": reason,
+            "start": {"dateTime": start.isoformat()},
+            "end": {"dateTime": end.isoformat()},
+        }
+
+        service.events().update(calendarId="primary", eventId=event_id, body=event).execute()
+        return True
+    except Exception:
+        return False
