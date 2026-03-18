@@ -17,7 +17,13 @@ def get_calendar_service():
     token_path = os.path.join(settings.BASE_DIR, "token.json")
     creds_path = os.path.join(settings.BASE_DIR, "credential-landingpage.json")
 
-    if os.path.exists(token_path):
+    # En producción leer el token desde variable de entorno
+    google_token_json = os.environ.get("GOOGLE_TOKEN_JSON")
+    if google_token_json:
+        import json
+        from google.oauth2.credentials import Credentials as GoogleCreds
+        creds = GoogleCreds.from_authorized_user_info(json.loads(google_token_json), SCOPES)
+    elif os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(token_path, SCOPES)
 
     if not creds or not creds.valid:
@@ -26,8 +32,9 @@ def get_calendar_service():
         else:
             flow = InstalledAppFlow.from_client_secrets_file(creds_path, SCOPES)
             creds = flow.run_local_server(port=8080)
-        with open(token_path, "w") as token:
-            token.write(creds.to_json())
+        if not google_token_json:
+            with open(token_path, "w") as token:
+                token.write(creds.to_json())
 
     return build("calendar", "v3", credentials=creds)
 
