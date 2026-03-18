@@ -204,6 +204,8 @@ DJOSER = {
     },
 }
 
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
+
 CORS_ALLOWED_ORIGINS = [
     o.strip()
     for o in os.environ.get(
