@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/login"
 import { useState, useEffect, useCallback } from "react"
+import { clienteStore } from "@/store/cliente"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
@@ -616,6 +617,161 @@ function InicioView({ user, citas, loading }) {
   )
 }
 
+// ── MODAL NUEVO CLIENTE ───────────────────────────────────────────
+function ModalNuevoCliente({ onClose, onGuardar }) {
+  const [form, setForm]       = useState({ name: "", lastname: "", email: "" })
+  const [guardando, setGuardando] = useState(false)
+  const [error, setError]     = useState(null)
+
+  const onChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    setGuardando(true)
+    setError(null)
+    try {
+      await onGuardar(form)
+      onClose()
+    } catch {
+      setError("No se pudo crear el cliente. Revisá los datos.")
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  const inputStyle = { backgroundColor: "#0a0a0a", border: "1px solid #C9A84C30", color: "#e5e7eb" }
+  const labelStyle = { color: "#C9A84C80", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{ backgroundColor: "rgba(0,0,0,0.7)" }}>
+      <div className="w-full max-w-md border" style={{ backgroundColor: "#0f0f0f", borderColor: "#C9A84C30" }}>
+
+        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "#C9A84C20" }}>
+          <div className="flex items-center gap-3">
+            <span style={{ color: "#C9A84C" }}><IconUsers size={18} /></span>
+            <h3 className="text-white font-bold">Nuevo Cliente</h3>
+          </div>
+          <button onClick={onClose} style={{ color: "#6b7280" }} onMouseEnter={e => e.currentTarget.style.color = "#C9A84C"} onMouseLeave={e => e.currentTarget.style.color = "#6b7280"}>
+            <IconX />
+          </button>
+        </div>
+
+        <form onSubmit={onSubmit} className="p-6 space-y-4">
+          <div>
+            <label style={labelStyle}>Nombre</label>
+            <input name="name" value={form.name} onChange={onChange} required placeholder="Juan" className="w-full mt-1 px-3 py-2.5 text-sm outline-none" style={inputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>Apellido</label>
+            <input name="lastname" value={form.lastname} onChange={onChange} required placeholder="Pérez" className="w-full mt-1 px-3 py-2.5 text-sm outline-none" style={inputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>Email</label>
+            <input name="email" type="email" value={form.email} onChange={onChange} required placeholder="juan@mail.com" className="w-full mt-1 px-3 py-2.5 text-sm outline-none" style={inputStyle} />
+          </div>
+
+          {error && <p className="text-red-400 text-xs">{error}</p>}
+
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={onClose} className="flex-1 py-3 text-sm font-semibold border transition-colors" style={{ borderColor: "#C9A84C30", color: "#6b7280" }}>
+              Cancelar
+            </button>
+            <button type="submit" disabled={guardando} className="flex-1 py-3 text-sm font-bold uppercase tracking-widest" style={{ backgroundColor: "#C9A84C", color: "#0a0a0a", opacity: guardando ? 0.6 : 1 }}>
+              {guardando ? "Guardando..." : "Crear cliente"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+// ── VISTA CLIENTES ────────────────────────────────────────────────
+function ClientesView() {
+  const clientes      = clienteStore(state => state.clientes)
+  const loading       = clienteStore(state => state.loading)
+  const getClientes   = clienteStore(state => state.getClientes)
+  const postCliente   = clienteStore(state => state.postCliente)
+  const deleteCliente = clienteStore(state => state.deleteCliente)
+
+  const [modalAbierto, setModal] = useState(false)
+
+  useEffect(() => { getClientes() }, [])
+
+  return (
+    <>
+      {modalAbierto && <ModalNuevoCliente onClose={() => setModal(false)} onGuardar={postCliente} />}
+
+      <div className="mb-10">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="h-px w-8" style={{ backgroundColor: "#C9A84C" }} />
+          <span className="text-xs uppercase tracking-[0.3em]" style={{ color: "#C9A84C" }}>Gestión</span>
+        </div>
+        <h1 className="text-3xl font-bold text-white">Clientes</h1>
+        <p className="text-gray-500 text-sm mt-1">Listado de clientes registrados</p>
+      </div>
+
+      <div className="border" style={{ backgroundColor: "#0f0f0f", borderColor: "#C9A84C20" }}>
+        <div className="px-8 py-5 border-b flex items-center gap-3" style={{ borderColor: "#C9A84C20" }}>
+          <span style={{ color: "#C9A84C" }}><IconUsers /></span>
+          <h2 className="text-white font-bold">Clientes</h2>
+          <span className="ml-auto text-xs uppercase tracking-widest px-3 py-1 border" style={{ color: "#C9A84C", borderColor: "#C9A84C30" }}>
+            {clientes.length} registros
+          </span>
+          <button
+            onClick={() => setModal(true)}
+            className="flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-widest"
+            style={{ backgroundColor: "#C9A84C", color: "#0a0a0a" }}
+          >
+            <IconPlus size={14} /> Nuevo cliente
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="px-8 py-10 text-center text-gray-600 text-sm">Cargando...</div>
+        ) : clientes.length === 0 ? (
+          <div className="px-8 py-10 text-center text-gray-600 text-sm">Sin clientes registrados</div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr style={{ borderBottom: "1px solid #C9A84C15" }}>
+                {["Nombre", "Apellido", "Email", ""].map((col, i) => (
+                  <th key={i} className="px-8 py-4 text-left text-xs uppercase tracking-widest font-semibold" style={{ color: "#C9A84C60" }}>
+                    {col}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {clientes.map((c, i) => (
+                <tr
+                  key={c.id ?? i}
+                  style={{ borderBottom: "1px solid #C9A84C10" }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundColor = "#C9A84C08"}
+                  onMouseLeave={e => e.currentTarget.style.backgroundColor = "transparent"}
+                >
+                  <td className="px-8 py-4 text-white font-medium">{c.name}</td>
+                  <td className="px-8 py-4 text-gray-400">{c.lastname}</td>
+                  <td className="px-8 py-4" style={{ color: "#C9A84C80" }}>{c.email}</td>
+                  <td className="px-8 py-4 text-right">
+                    <button
+                      onClick={() => deleteCliente(c.id)}
+                      className="text-xs px-3 py-1.5 uppercase tracking-wide font-semibold"
+                      style={{ backgroundColor: "#ff000010", color: "#ef4444", border: "1px solid #ff000030" }}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </>
+  )
+}
+
 // ── NAV ITEMS ─────────────────────────────────────────────────────
 const navItems = [
   { id: "inicio",      label: "Inicio",      Icon: IconHome     },
@@ -728,12 +884,7 @@ export default function DashboardPage() {
         <main className="flex-1 px-8 py-10 overflow-y-auto">
           {vista === "inicio"     && <InicioView user={user} citas={citas} loading={loading} />}
           {vista === "calendario" && <CalendarioView citas={citas} loading={loading} crearCita={crearCita} eliminarCita={eliminarCita} actualizarEstado={actualizarEstado} />}
-          {vista === "clientes"   && (
-            <div className="text-center py-20">
-              <div className="text-5xl mb-4 opacity-20">👥</div>
-              <p className="text-gray-500 text-sm">Módulo de clientes próximamente</p>
-            </div>
-          )}
+          {vista === "clientes"   && <ClientesView />}
           {vista === "casos"      && (
             <div className="text-center py-20">
               <div className="text-5xl mb-4 opacity-20">📁</div>
